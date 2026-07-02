@@ -394,8 +394,10 @@ export function serializeFrontmatter(fm: InferredFrontmatter): string {
   const lines: string[] = ['---'];
 
   // Title — quote if it contains special YAML chars
+  // Also quote ISO-8601 date-like titles so gray-matter/js-yaml parse them as strings, not Date objects.
   const needsQuote = /[:"'#\[\]{}|>&*!?,]/.test(fm.title);
-  lines.push(`title: ${needsQuote ? JSON.stringify(fm.title) : fm.title}`);
+  const isDateLike = /^\d{4}-\d{2}-\d{2}$/.test(fm.title);
+  lines.push(`title: ${needsQuote || isDateLike ? JSON.stringify(fm.title) : fm.title}`);
 
   lines.push(`type: ${fm.type}`);
 
